@@ -47,6 +47,48 @@ const register = asyncHandler(async (req, res) => {
   });
 });
 
+
+
+
+// login user
+const login = asyncHandler(async (req, res) => {
+  const { email, password,} = req.body;
+  // Kiểm tra xem có thiếu thông tin không
+  if (!email || !password ) {
+    return res.status(200).json({
+      status: false,
+      error: "error: Missing input",
+    });
+  }
+  // Biểu thức chính quy để kiểm tra định dạng email
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!emailRegex.test(email)) {
+    return res.status(200).json({
+      status: false,
+      error: "error: Invalid email format",
+    });
+  }
+  // Kiểm tra xem email đã tồn tại trong cơ sở dữ liệu chưa
+  const existingUser = await User.findOne({ email });
+  if (!existingUser) {
+    return res.status(200).json({
+      status: false,
+      error: "error: Email not found",
+    });
+  }
+  const response = await User.findOne({email})
+  if(response && await response.isCorrectPassword(password)){
+    const {password, role,... userData} = response.toObject()
+    return res.status(200).json({
+      status: true,
+      data: userData
+    });
+  }else throw new Error ('Invalid password')
+  
+});
+
+
 //get all user
 const getAllUsers = asyncHandler(async (req, res) => {
     // Sử dụng phương thức find() để lấy tất cả người dùng
@@ -60,5 +102,5 @@ const getAllUsers = asyncHandler(async (req, res) => {
 
 
 module.exports = {
-  register, getAllUsers
+  register, getAllUsers, login,
 };

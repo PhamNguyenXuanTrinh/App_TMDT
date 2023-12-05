@@ -21,16 +21,19 @@ var userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-
 /// mã hóa password trước khi tạo user mới
-
-/// nếu không có gì thay đổi thì không cần hash password nữa
-userSchema.pre("save", async function (next){
-  if(!this.isModified('password')){
-    next()
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
+    next();
   }
-  const salt = bcrypt.genSaltSync(10)
-  this.password = bcrypt.hashSync(this.password, salt)
+  const salt = bcrypt.genSaltSync(10);
+  this.password = bcrypt.hashSync(this.password, salt);
 });
+/// check password có đúng không
+userSchema.methods ={
+  isCorrectPassword: async function(password) {
+    return await bcrypt.compare(password, this.password)
+  }
+}
 //Export the model
 module.exports = mongoose.model("User", userSchema);
