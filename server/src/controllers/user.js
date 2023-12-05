@@ -1,6 +1,6 @@
+const { generateAccessToken, generateRefreshToken } = require("../middlewares/jwt");
 const User = require("../models/user");
 const asyncHandler = require("express-async-handler");
-
 const register = asyncHandler(async (req, res) => {
   const { firstName, lastName, email, password, mobile } = req.body;
 
@@ -80,15 +80,30 @@ const login = asyncHandler(async (req, res) => {
   const response = await User.findOne({email})
   if(response && await response.isCorrectPassword(password)){
     const {password, role,... userData} = response.toObject()
+    const accessToken = generateAccessToken(response._id, role)
+    const refreshToken = generateRefreshToken(response._id)
+    await User.findByIdAndUpdate(response._id, {refreshToken}, {new: true})
+    res.cookie('refreshToken',refreshToken, {httpOnly: true ,maxAge: 7*24*60*60*1000})
     return res.status(200).json({
       status: true,
+      accessToken,
       data: userData
     });
   }else throw new Error ('Invalid password')
   
 });
 
+// get one user 
+const getOneUser = asyncHandler(async (req, res) => {
+  // Sử dụng phương thức find() để lấy tất cả người dùng
+  const {_id}= req.user
+  const user = await User.findById(_id);
 
+  res.status(200).json({
+    status: true,
+    data: user,
+  });
+});
 //get all user
 const getAllUsers = asyncHandler(async (req, res) => {
     // Sử dụng phương thức find() để lấy tất cả người dùng
@@ -102,5 +117,5 @@ const getAllUsers = asyncHandler(async (req, res) => {
 
 
 module.exports = {
-  register, getAllUsers, login,
+  register, getAllUsers, login, getOneUser
 };
