@@ -1,6 +1,11 @@
-const { generateAccessToken, generateRefreshToken } = require("../middlewares/jwt");
+const {
+  generateAccessToken,
+  generateRefreshToken,
+} = require("../middlewares/jwt");
 const User = require("../models/user");
 const asyncHandler = require("express-async-handler");
+const jwt = require("jsonwebtoken");
+
 const register = asyncHandler(async (req, res) => {
   const { firstName, lastName, email, password, mobile } = req.body;
 
@@ -47,14 +52,11 @@ const register = asyncHandler(async (req, res) => {
   });
 });
 
-
-
-
 // login user
 const login = asyncHandler(async (req, res) => {
-  const { email, password,} = req.body;
+  const { email, password } = req.body;
   // Kiểm tra xem có thiếu thông tin không
-  if (!email || !password ) {
+  if (!email || !password) {
     return res.status(200).json({
       status: false,
       error: "error: Missing input",
@@ -77,26 +79,28 @@ const login = asyncHandler(async (req, res) => {
       error: "error: Email not found",
     });
   }
-  const response = await User.findOne({email})
-  if(response && await response.isCorrectPassword(password)){
-    const {password, role,... userData} = response.toObject()
-    const accessToken = generateAccessToken(response._id, role)
-    const refreshToken = generateRefreshToken(response._id)
-    await User.findByIdAndUpdate(response._id, {refreshToken}, {new: true})
-    res.cookie('refreshToken',refreshToken, {httpOnly: true ,maxAge: 7*24*60*60*1000})
+  const response = await User.findOne({ email });
+  if (response && (await response.isCorrectPassword(password))) {
+    const { password, role, ...userData } = response.toObject();
+    const accessToken = generateAccessToken(response._id, role);
+    const refreshToken = generateRefreshToken(response._id);
+    await User.findByIdAndUpdate(response._id, { refreshToken }, { new: true });
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
     return res.status(200).json({
       status: true,
       accessToken,
-      data: userData
+      data: userData,
     });
-  }else throw new Error ('Invalid password')
-  
+  } else throw new Error("Invalid password");
 });
 
-// get one user 
+// get one user
 const getOneUser = asyncHandler(async (req, res) => {
   // Sử dụng phương thức find() để lấy tất cả người dùng
-  const {_id}= req.user
+  const { _id } = req.user;
   const user = await User.findById(_id);
 
   res.status(200).json({
@@ -106,16 +110,53 @@ const getOneUser = asyncHandler(async (req, res) => {
 });
 //get all user
 const getAllUsers = asyncHandler(async (req, res) => {
-    // Sử dụng phương thức find() để lấy tất cả người dùng
-    const allUsers = await User.find();
-  
-    res.status(200).json({
-      status: true,
-      data: allUsers,
-    });
+  // Sử dụng phương thức find() để lấy tất cả người dùng
+  const allUsers = await User.find();
+
+  res.status(200).json({
+    status: true,
+    data: allUsers,
   });
+});
 
-
+const refreshAccessToken = asyncHandler(async (req, res) => {
+  const cookie = req.cookies;
+  // const {_id}=
+  if (!cookie) throw new Error("no refresh token");
+  const rs = await jwt.verify(cookie.refreshToken, process.env.JWT_SECRET);
+  const response = await User.findOne({
+    _id: rs._id,
+    refreshToken: cookie.refreshToken,
+  });
+  return res.status(200).json({
+    success: response ? true : false,
+    newAccessToken: response
+      ? generateAccessToken(response._id, response.role)
+      : "Refresh token not matched",
+  });
+});
+/// logout
+const logout = asyncHandler(async (req, res) => {
+  const cookie = req.cookies;
+  if (!cookie || !cookie.refreshToken) throw new Error("no refresh token in cookie");
+  /// xóa refreshToken ở db
+  await User.findOneAndUpdate({refreshToken: cookie.refreshToken},{refreshToken: ''},{new: true})
+  /// xóa cookie ra trình duyệt
+  res.clearCookie('refreshToken',{
+    httpOnly: true,
+    secure: true
+  })
+  return res.status(200).json({
+    success: true,
+    message: 'logout is done'
+  })
+  
+});
 module.exports = {
-  register, getAllUsers, login, getOneUser
+  register,
+  getAllUsers,
+  login,
+  getOneUser,
+  refreshAccessToken,
+  logout
 };

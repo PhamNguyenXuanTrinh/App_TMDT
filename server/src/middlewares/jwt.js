@@ -4,7 +4,7 @@ const generateAccessToken = (uid,role)=>{
 }
 
 const generateRefreshToken = (uid,role)=>{
-    return jwt.sign({_id: uid},process.env.JWT_SECRET,{expiresIn: '365d'})
+    return jwt.sign({_id: uid},process.env.JWT_SECRET,{expiresIn: '60s'})
 }
 module.exports = {
     generateAccessToken, generateRefreshToken

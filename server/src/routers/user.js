@@ -7,4 +7,7 @@ router.post('/register', ctrl.register);
 router.post('/login', ctrl.login);
 router.get('/getAllUser', ctrl.getAllUsers);
 router.get('/getOneUser',verifyAccessToken, ctrl.getOneUser);
+router.post('/refreshToken', ctrl.refreshAccessToken);
+router.get('/logout', ctrl.logout);
+
 module.exports = router;
