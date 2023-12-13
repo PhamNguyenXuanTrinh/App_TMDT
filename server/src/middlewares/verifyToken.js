@@ -9,8 +9,7 @@ const verifyAccessToken = asyncHandler(async (req, res, next) => {
           return res.status(401).json({
             success: false,
             message: "Invalid access token",
-          });
-        console.log(decode);
+          })
         req.user = decode;
         next();
       })
