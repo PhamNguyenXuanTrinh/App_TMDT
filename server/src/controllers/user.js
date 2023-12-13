@@ -1,11 +1,7 @@
-const {
-  generateAccessToken,
-  generateRefreshToken,
-} = require("../middlewares/jwt");
 const User = require("../models/user");
 const asyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
-
+const {generateAccessToken,generateRefreshToken,} = require("../middlewares/jwt");
 const register = asyncHandler(async (req, res) => {
   const { firstName, lastName, email, password, mobile } = req.body;
 
@@ -118,10 +114,9 @@ const getAllUsers = asyncHandler(async (req, res) => {
     data: allUsers,
   });
 });
-
+/// refreshAccessToken
 const refreshAccessToken = asyncHandler(async (req, res) => {
   const cookie = req.cookies;
-  // const {_id}=
   if (!cookie) throw new Error("no refresh token");
   const rs = await jwt.verify(cookie.refreshToken, process.env.JWT_SECRET);
   const response = await User.findOne({
@@ -152,11 +147,47 @@ const logout = asyncHandler(async (req, res) => {
   })
   
 });
+// delete user
+const delateUser = asyncHandler(async (req, res) => {
+  const {_id} = req.query
+  if(!_id) throw new Error('missing input')
+  const response = await User.findByIdAndDelete(_id)
+  res.status(200).json({
+    success: response? true: false,
+    message: response? 'delete success': "no user delete"
+  })
+});
+
+// update user
+const updateUser = asyncHandler(async (req, res) => {
+  const {_id} = req.user
+  if(!_id|| Object.keys(req.body).length==0) throw new Error('missing input')
+  const response = await User.findByIdAndUpdate(_id,req.body, {new: true}).select('-password -role')
+  res.status(200).json({
+    success: response? true: false,
+    message: response? 'update success': "no user update",
+    data: response
+  })
+});
+const updateUserByAdmin = asyncHandler(async (req, res) => {
+  const {uid} = req.params
+  if(Object.keys(req.body).length==0) throw new Error('missing input')
+  const response = await User.findByIdAndUpdate(uid,req.body, {new: true}).select('-password -role')
+  res.status(200).json({
+    success: response? true: false,
+    message: response? 'update success': "no user update",
+    data: response
+  })
+});
+
 module.exports = {
   register,
   getAllUsers,
   login,
   getOneUser,
   refreshAccessToken,
-  logout
+  logout,
+  delateUser,
+  updateUser,
+  updateUserByAdmin,
 };
