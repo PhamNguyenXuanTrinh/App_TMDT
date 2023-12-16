@@ -26,9 +26,9 @@ var productSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    catagory: {
+    Category: {
       type: mongoose.Types.ObjectId,
-      ref: "Catagory",
+      ref: "Category",
     },
     quantity: {
       type: Number,
@@ -45,14 +45,14 @@ var productSchema = new mongoose.Schema(
       type: String,
       enum: ["Black", "Blue", "Red"],
     },
-    rating: [
+    ratings: [
       {
         star: { type: Number },
         postedBy: { type: mongoose.Types.ObjectId, ref: "User" },
-        content: { type: String },
+        comment: { type: String },
       },
     ],
-    totalRating: {
+    totalRatings: {
       type: Number,
       default: 0,
     },
