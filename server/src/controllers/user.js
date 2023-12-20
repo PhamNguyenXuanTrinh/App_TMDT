@@ -83,7 +83,7 @@ const login = asyncHandler(async (req, res) => {
     await User.findByIdAndUpdate(response._id, { refreshToken }, { new: true });
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 30 * 24 * 60 * 60 * 1000,
     });
     return res.status(200).json({
       status: true,
@@ -169,6 +169,8 @@ const updateUser = asyncHandler(async (req, res) => {
     data: response
   })
 });
+
+// update user by admin
 const updateUserByAdmin = asyncHandler(async (req, res) => {
   const {uid} = req.params
   if(Object.keys(req.body).length==0) throw new Error('missing input')
