@@ -139,8 +139,14 @@ const ratings = asyncHandler(async (req, res) => {
 
 
 const uploadImgProduct = asyncHandler(async (req, res) => {
-  console.log(req.file)
-  return res.json("OK")
+
+  const _id = req.params
+  if(!req.file) throw new Error('missing input') 
+  const response = await Product.findByIdAndUpdate(_id, {$push: {images: {$each:  req.file.map(e => e.path)}}}, {new: true})
+  return res.status(200).json({
+    status: 'OK',
+    data: response
+  })
 });
 
 module.exports = {

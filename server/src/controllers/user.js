@@ -182,6 +182,20 @@ const updateUserByAdmin = asyncHandler(async (req, res) => {
   })
 });
 
+
+// update address user
+
+const updateAddress = asyncHandler(async (req, res) => {
+  const {_id} = req.user
+  if(!req.body.address) throw new Error('missing input')
+  const response = await User.findByIdAndUpdate(_id, {$push: {address: req.body.address}}, {new: true}).select('-password -role')
+  res.status(200).json({
+    success: response? true: false,
+    message: response? 'update success': "no user update",
+    data: response
+  })
+});
+
 module.exports = {
   register,
   getAllUsers,
@@ -192,4 +206,5 @@ module.exports = {
   delateUser,
   updateUser,
   updateUserByAdmin,
+  updateAddress
 };

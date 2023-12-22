@@ -10,7 +10,7 @@ var userSchema = new mongoose.Schema(
     mobile: { type: Number, required: true, unique: true },
     role: { type: String, default: "user" },
     card: { type: Array, default: [] },
-    address: [{ type: mongoose.Types.ObjectId, ref: "Address" }],
+    address: {type: Array, default: []},
     wishList: [{ type: mongoose.Types.ObjectId, ref: "Product" }],
     isBlocked: { type: Boolean, default: false },
     refreshToken: { type: String },

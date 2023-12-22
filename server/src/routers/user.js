@@ -11,5 +11,6 @@ router.post('/refreshToken', ctrl.refreshAccessToken);
 router.get('/logout', ctrl.logout);
 router.delete('/', ctrl.delateUser);
 router.put('/current',verifyAccessToken, ctrl.updateUser);
+router.put('/address',verifyAccessToken, ctrl.updateAddress);
 router.put('/:uid',[verifyAccessToken, isAdmin], ctrl.updateUserByAdmin);
 module.exports = router;
