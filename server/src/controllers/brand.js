@@ -23,7 +23,7 @@ const getAllBrand = asyncHandler(async (req, res) => {
 
 const updateBrand = asyncHandler(async (req, res) => {
   const { _id } = req.params;
-  const response = await Brand.findByIdAndUpdate(_id, req.body, {new: true});
+  const response = await Brand.findByIdAndUpdate(_id, req.body, { new: true });
   return res.status(200).json({
     status: "OK",
     message: response ? "success" : "failure",
@@ -31,18 +31,17 @@ const updateBrand = asyncHandler(async (req, res) => {
   });
 });
 const deleteBrand = asyncHandler(async (req, res) => {
-    const { _id } = req.params;
-    const response = await Brand.findByIdAndDelete(_id,{new: true});
-    return res.status(200).json({
-      status: "OK",
-      message: response ? "success" : "failure",
-      data: response,
-    });
+  const { _id } = req.params;
+  const response = await Brand.findByIdAndDelete(_id, { new: true });
+  return res.status(200).json({
+    status: "OK",
+    message: response ? "success" : "failure",
+    data: response,
   });
+});
 module.exports = {
-    createBrand,
-    getAllBrand,
-    updateBrand,
-    deleteBrand,
-
+  createBrand,
+  getAllBrand,
+  updateBrand,
+  deleteBrand,
 };

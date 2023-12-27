@@ -1,4 +1,3 @@
-const { trusted } = require("mongoose");
 const Blog = require("../models/blog");
 const asyncHandler = require("express-async-handler");
 
@@ -36,8 +35,8 @@ const updateBlog = asyncHandler(async (req, res) => {
 });
 
 const likeBlog = asyncHandler(async (req, res) => {
-  const { bid } = req.params
-  const {_id} = req.user
+  const { bid } = req.params;
+  const { _id } = req.user;
 
   if (!bid) {
     return res.status(400).json({
@@ -89,8 +88,7 @@ const likeBlog = asyncHandler(async (req, res) => {
   }
 });
 
-
-//dislike 
+//dislike
 const dislikeBlog = asyncHandler(async (req, res) => {
   const { bid } = req.params;
   const { _id } = req.user;
@@ -147,16 +145,19 @@ const dislikeBlog = asyncHandler(async (req, res) => {
 
 const getOneBlog = asyncHandler(async (req, res) => {
   const { _id } = req.params;
-  const response = await Blog.findByIdAndUpdate(_id,{$inc: {numberViews :1}}, { new: true })
-    .populate('likes', 'firstName lastName')  //// từ map từ id dể lấy dữ liệu họ và tên
-    .populate('dislikes', 'firstName lastName')
+  const response = await Blog.findByIdAndUpdate(
+    _id,
+    { $inc: { numberViews: 1 } },
+    { new: true }
+  )
+    .populate("likes", "firstName lastName") //// từ map từ id dể lấy dữ liệu họ và tên
+    .populate("dislikes", "firstName lastName");
   return res.status(200).json({
     status: "OK",
     message: response ? "success" : "failure",
     data: response,
   });
 });
-
 
 const deleteBlog = asyncHandler(async (req, res) => {
   const { _id } = req.params;
@@ -168,17 +169,19 @@ const deleteBlog = asyncHandler(async (req, res) => {
   });
 });
 
-
 //upImgBlog
 const uploadImgBlog = asyncHandler(async (req, res) => {
-
-  const _id = req.params
-  if(!req.file) throw new Error('missing input') 
-  const response = await Blog.findByIdAndUpdate(_id, {image: req.file} , {new: true})
+  const _id = req.params;
+  if (!req.file) throw new Error("missing input");
+  const response = await Blog.findByIdAndUpdate(
+    _id,
+    { image: req.file },
+    { new: true }
+  );
   return res.status(200).json({
-    status: 'OK',
-    data: response
-  })
+    status: "OK",
+    data: response,
+  });
 });
 module.exports = {
   createBlog,
@@ -188,5 +191,5 @@ module.exports = {
   dislikeBlog,
   getOneBlog,
   deleteBlog,
-  uploadImgBlog
+  uploadImgBlog,
 };

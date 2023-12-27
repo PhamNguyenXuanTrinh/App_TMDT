@@ -1,7 +1,10 @@
 const User = require("../models/user");
 const asyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
-const {generateAccessToken,generateRefreshToken,} = require("../middlewares/jwt");
+const {
+  generateAccessToken,
+  generateRefreshToken,
+} = require("../middlewares/jwt");
 const register = asyncHandler(async (req, res) => {
   const { firstName, lastName, email, password, mobile } = req.body;
 
@@ -133,67 +136,79 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 /// logout
 const logout = asyncHandler(async (req, res) => {
   const cookie = req.cookies;
-  if (!cookie || !cookie.refreshToken) throw new Error("no refresh token in cookie");
+  if (!cookie || !cookie.refreshToken)
+    throw new Error("no refresh token in cookie");
   /// xóa refreshToken ở db
-  await User.findOneAndUpdate({refreshToken: cookie.refreshToken},{refreshToken: ''},{new: true})
+  await User.findOneAndUpdate(
+    { refreshToken: cookie.refreshToken },
+    { refreshToken: "" },
+    { new: true }
+  );
   /// xóa cookie ra trình duyệt
-  res.clearCookie('refreshToken',{
+  res.clearCookie("refreshToken", {
     httpOnly: true,
-    secure: true
-  })
+    secure: true,
+  });
   return res.status(200).json({
     success: true,
-    message: 'logout is done'
-  })
-  
+    message: "logout is done",
+  });
 });
 // delete user
 const delateUser = asyncHandler(async (req, res) => {
-  const {_id} = req.query
-  if(!_id) throw new Error('missing input')
-  const response = await User.findByIdAndDelete(_id)
+  const { _id } = req.query;
+  if (!_id) throw new Error("missing input");
+  const response = await User.findByIdAndDelete(_id);
   res.status(200).json({
-    success: response? true: false,
-    message: response? 'delete success': "no user delete"
-  })
+    success: response ? true : false,
+    message: response ? "delete success" : "no user delete",
+  });
 });
 
 // update user
 const updateUser = asyncHandler(async (req, res) => {
-  const {_id} = req.user
-  if(!_id|| Object.keys(req.body).length==0) throw new Error('missing input')
-  const response = await User.findByIdAndUpdate(_id,req.body, {new: true}).select('-password -role')
+  const { _id } = req.user;
+  if (!_id || Object.keys(req.body).length == 0)
+    throw new Error("missing input");
+  const response = await User.findByIdAndUpdate(_id, req.body, {
+    new: true,
+  }).select("-password -role");
   res.status(200).json({
-    success: response? true: false,
-    message: response? 'update success': "no user update",
-    data: response
-  })
+    success: response ? true : false,
+    message: response ? "update success" : "no user update",
+    data: response,
+  });
 });
 
 // update user by admin
 const updateUserByAdmin = asyncHandler(async (req, res) => {
-  const {uid} = req.params
-  if(Object.keys(req.body).length==0) throw new Error('missing input')
-  const response = await User.findByIdAndUpdate(uid,req.body, {new: true}).select('-password -role')
+  const { uid } = req.params;
+  if (Object.keys(req.body).length == 0) throw new Error("missing input");
+  const response = await User.findByIdAndUpdate(uid, req.body, {
+    new: true,
+  }).select("-password -role");
   res.status(200).json({
-    success: response? true: false,
-    message: response? 'update success': "no user update",
-    data: response
-  })
+    success: response ? true : false,
+    message: response ? "update success" : "no user update",
+    data: response,
+  });
 });
-
 
 // update address user
 
 const updateAddress = asyncHandler(async (req, res) => {
-  const {_id} = req.user
-  if(!req.body.address) throw new Error('missing input')
-  const response = await User.findByIdAndUpdate(_id, {$push: {address: req.body.address}}, {new: true}).select('-password -role')
+  const { _id } = req.user;
+  if (!req.body.address) throw new Error("missing input");
+  const response = await User.findByIdAndUpdate(
+    _id,
+    { $push: { address: req.body.address } },
+    { new: true }
+  ).select("-password -role");
   res.status(200).json({
-    success: response? true: false,
-    message: response? 'update success': "no user update",
-    data: response
-  })
+    success: response ? true : false,
+    message: response ? "update success" : "no user update",
+    data: response,
+  });
 });
 
 module.exports = {
@@ -206,5 +221,5 @@ module.exports = {
   delateUser,
   updateUser,
   updateUserByAdmin,
-  updateAddress
+  updateAddress,
 };

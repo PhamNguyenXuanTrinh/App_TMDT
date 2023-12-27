@@ -23,7 +23,9 @@ const getAllBlogCategory = asyncHandler(async (req, res) => {
 
 const updateBlogCategory = asyncHandler(async (req, res) => {
   const { _id } = req.params;
-  const response = await BlogCategory.findByIdAndUpdate(_id, req.body, {new: true});
+  const response = await BlogCategory.findByIdAndUpdate(_id, req.body, {
+    new: true,
+  });
   return res.status(200).json({
     status: "OK",
     message: response ? "success" : "failure",
@@ -31,17 +33,17 @@ const updateBlogCategory = asyncHandler(async (req, res) => {
   });
 });
 const deleteBlogCategory = asyncHandler(async (req, res) => {
-    const { _id } = req.params;
-    const response = await BlogCategory.findByIdAndDelete(_id,{new: true});
-    return res.status(200).json({
-      status: "OK",
-      message: response ? "success" : "failure",
-      data: response,
-    });
+  const { _id } = req.params;
+  const response = await BlogCategory.findByIdAndDelete(_id, { new: true });
+  return res.status(200).json({
+    status: "OK",
+    message: response ? "success" : "failure",
+    data: response,
   });
+});
 module.exports = {
   createBlogCategory,
   getAllBlogCategory,
   updateBlogCategory,
-  deleteBlogCategory
+  deleteBlogCategory,
 };

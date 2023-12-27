@@ -1,22 +1,21 @@
-const express = require('express')
-const connectDb = require ('./config/connect_db')
-const dotenv = require ('dotenv')
-const initRouters = require('./routers')
-const cookieParser = require('cookie-parser')
+const express = require("express");
+const connectDb = require("./config/connect_db");
+const dotenv = require("dotenv");
+const initRouters = require("./routers");
+const cookieParser = require("cookie-parser");
 
-
-const app = express()
-dotenv.config()
-app.use(express.json())
-app.use(express.urlencoded({extended: true}))
-app.use(cookieParser())
+const app = express();
+dotenv.config();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 /// connect db
 
-connectDb()
+connectDb();
 
-initRouters(app)
-app.get('/', function (req, res) {
-  res.send('Hello World')
-})
+initRouters(app);
+app.get("/", function (req, res) {
+  res.send("Hello World");
+});
 
-app.listen(process.env.PORT)
+app.listen(process.env.PORT);

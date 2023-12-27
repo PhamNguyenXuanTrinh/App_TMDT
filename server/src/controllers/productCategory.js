@@ -23,7 +23,9 @@ const getAllCategory = asyncHandler(async (req, res) => {
 
 const updateCategory = asyncHandler(async (req, res) => {
   const { _id } = req.params;
-  const response = await ProductCategory.findByIdAndUpdate(_id, req.body, {new: true});
+  const response = await ProductCategory.findByIdAndUpdate(_id, req.body, {
+    new: true,
+  });
   return res.status(200).json({
     status: "OK",
     message: response ? "success" : "failure",
@@ -31,17 +33,17 @@ const updateCategory = asyncHandler(async (req, res) => {
   });
 });
 const deleteCategory = asyncHandler(async (req, res) => {
-    const { _id } = req.params;
-    const response = await ProductCategory.findByIdAndDelete(_id,{new: true});
-    return res.status(200).json({
-      status: "OK",
-      message: response ? "success" : "failure",
-      data: response,
-    });
+  const { _id } = req.params;
+  const response = await ProductCategory.findByIdAndDelete(_id, { new: true });
+  return res.status(200).json({
+    status: "OK",
+    message: response ? "success" : "failure",
+    data: response,
   });
+});
 module.exports = {
   createCategory,
   getAllCategory,
   updateCategory,
-  deleteCategory
+  deleteCategory,
 };

@@ -28,7 +28,8 @@ const getAllCoupon = asyncHandler(async (req, res) => {
 
 const updateCoupon = asyncHandler(async (req, res) => {
   const { _id } = req.params;
-  if(req.body.expiry) req.body.expiry= Date.now() + +req.body.expiry * 24 * 60 * 60 * 1000
+  if (req.body.expiry)
+    req.body.expiry = Date.now() + +req.body.expiry * 24 * 60 * 60 * 1000;
   const response = await Coupon.findByIdAndUpdate(_id, req.body, { new: true });
   return res.status(200).json({
     status: "OK",
